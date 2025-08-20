@@ -147,13 +147,12 @@ const Index = () => {
       return;
     }
     
-    // البحث عن التكرارات في حقلي Beneficiary Account و Beneficiary Name
+    // البحث عن التكرارات في حقل Beneficiary Account فقط
     const duplicateMap = new Map<string, DataRow[]>();
     
     rows.forEach((row) => {
       const benAccount = String(row["Beneficiary account"] || "").trim();
-      const benName = String(row["Beneficiary Name"] || "").trim();
-      const key = `${benAccount}|${benName}`;
+      const key = benAccount;
       
       if (!duplicateMap.has(key)) {
         duplicateMap.set(key, []);
