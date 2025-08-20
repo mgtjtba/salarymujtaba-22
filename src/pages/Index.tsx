@@ -67,6 +67,7 @@ const Index = () => {
   const [monthIndex, setMonthIndex] = useState<string>(String(new Date().getMonth()));
   const [year, setYear] = useState<string>(String(new Date().getFullYear()));
   const [showResults, setShowResults] = useState<boolean>(false);
+  const [duplicateRows, setDuplicateRows] = useState<DataRow[]>([]);
   const valueDate = useMemo(() => yyyymmdd(new Date()), []);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -145,8 +146,43 @@ const Index = () => {
       toast({ title: "لا يوجد بيانات", description: "يرجى تشفير الملف أولاً" });
       return;
     }
+    
+    // البحث عن التكرارات في حقلي Beneficiary Account و Beneficiary Name
+    const duplicateMap = new Map<string, DataRow[]>();
+    
+    rows.forEach((row) => {
+      const benAccount = String(row["Beneficiary account"] || "").trim();
+      const benName = String(row["Beneficiary Name"] || "").trim();
+      const key = `${benAccount}|${benName}`;
+      
+      if (!duplicateMap.has(key)) {
+        duplicateMap.set(key, []);
+      }
+      duplicateMap.get(key)!.push(row);
+    });
+    
+    // الحصول على الصفوف المكررة فقط (التي لها أكثر من صف واحد)
+    const duplicates: DataRow[] = [];
+    duplicateMap.forEach((rowsGroup) => {
+      if (rowsGroup.length > 1) {
+        duplicates.push(...rowsGroup);
+      }
+    });
+    
+    setDuplicateRows(duplicates);
     setShowResults(true);
-    toast({ title: "البحث مكتمل", description: "تم عرض النتائج أدناه" });
+    
+    if (duplicates.length > 0) {
+      toast({ 
+        title: "تم العثور على تكرارات", 
+        description: `عدد الصفوف المكررة: ${duplicates.length}` 
+      });
+    } else {
+      toast({ 
+        title: "لا توجد تكرارات", 
+        description: "لم يتم العثور على أي تكرارات في الحقول المحددة" 
+      });
+    }
   }, [rows]);
 
   return (
@@ -218,38 +254,43 @@ const Index = () => {
         </p>
 
         {/* النتائج */}
-        {showResults && rows.length > 0 && (
+        {showResults && (
           <div className="bg-white rounded-lg border-2 border-gray-400 p-4">
-            <h3 className="text-lg font-bold mb-4 text-center">نتائج المعالجة</h3>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Reference</TableHead>
-                    <TableHead>Value Date</TableHead>
-                    <TableHead>Remittance Information</TableHead>
-                    <TableHead>Beneficiary account</TableHead>
-                    <TableHead>Receiver BIC</TableHead>
-                    <TableHead>Payer Name</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.slice(0, 10).map((r, idx) => (
-                    <TableRow key={idx}>
-                      <TableCell className="font-mono text-sm">{r["Reference"]}</TableCell>
-                      <TableCell>{r["Value Date"]}</TableCell>
-                      <TableCell>{r["Remittance Information"]}</TableCell>
-                      <TableCell>{r["Beneficiary account"]}</TableCell>
-                      <TableCell>{r["Receiver BIC"]}</TableCell>
-                      <TableCell>{r["Payer Name"]}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-            <div className="mt-4 text-sm text-gray-600 text-center">
-              عرض أول 10 صفوف من أصل {rows.length} صف
-            </div>
+            {duplicateRows.length > 0 ? (
+              <>
+                <h3 className="text-lg font-bold mb-4 text-center text-red-600">الصفوف المكررة</h3>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-center">Beneficiary Account</TableHead>
+                        <TableHead className="text-center">Beneficiary Name</TableHead>
+                        <TableHead className="text-center">Reference</TableHead>
+                        <TableHead className="text-center">Payer Name</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {duplicateRows.map((r, idx) => (
+                        <TableRow key={idx} className="bg-red-50">
+                          <TableCell className="font-mono text-sm text-center">{r["Beneficiary account"]}</TableCell>
+                          <TableCell className="text-center">{r["Beneficiary Name"]}</TableCell>
+                          <TableCell className="font-mono text-sm text-center">{r["Reference"]}</TableCell>
+                          <TableCell className="text-center">{r["Payer Name"]}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                <div className="mt-4 text-sm text-red-600 text-center font-semibold">
+                  عدد الصفوف المكررة: {duplicateRows.length}
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <h3 className="text-lg font-bold mb-2 text-green-600">لا توجد تكرارات</h3>
+                <p className="text-gray-600">لم يتم العثور على أي تكرارات في حقلي Beneficiary Account و Beneficiary Name</p>
+              </div>
+            )}
           </div>
         )}
 
