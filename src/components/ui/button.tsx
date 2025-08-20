@@ -20,6 +20,12 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         hero:
           "bg-[var(--gradient-primary)] text-[hsl(var(--primary-foreground))] shadow-[var(--shadow-glow)] hover:brightness-110 hover:shadow-[var(--shadow-glow-strong)] active:translate-y-0.5 transition-transform",
+        "access-blue":
+          "bg-[hsl(var(--access-blue))] text-white hover:bg-[hsl(var(--access-blue))]/90 shadow-lg font-bold text-lg py-4 px-8 min-w-[200px]",
+        "access-red":
+          "bg-[hsl(var(--access-red))] text-white hover:bg-[hsl(var(--access-red))]/90 shadow-lg font-bold text-lg py-4 px-8 min-w-[200px]",
+        "access-green":
+          "bg-[hsl(var(--access-green))] text-white hover:bg-[hsl(var(--access-green))]/90 shadow-lg font-bold text-lg py-4 px-8 min-w-[200px]",
       },
       size: {
         default: "h-10 px-4 py-2",

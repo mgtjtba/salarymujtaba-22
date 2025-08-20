@@ -111,12 +111,18 @@ All colors MUST be HSL.
 /* --- Extend design tokens (gradients, shadows, motion) --- */
 @layer base {
   :root {
-    /* Brand duo for gradients */
+    /* Brand colors matching the Access interface */
     --brand-1: 265 88% 62%;
     --brand-2: 295 82% 56%;
     --gradient-primary: linear-gradient(135deg, hsl(var(--brand-1)) 0%, hsl(var(--brand-2)) 100%);
     --shadow-glow: 0 12px 30px -6px hsl(var(--brand-1) / 0.45);
     --shadow-glow-strong: 0 18px 40px -8px hsl(var(--brand-2) / 0.55);
+
+    /* Access-style colors */
+    --access-blue: 214 100% 70%;
+    --access-red: 0 85% 60%;
+    --access-green: 122 50% 55%;
+    --access-bg: 45 20% 92%;
 
     --surface-elevated: 0 10% 100%;
   }
@@ -126,6 +132,11 @@ All colors MUST be HSL.
     --gradient-primary: linear-gradient(135deg, hsl(var(--brand-1)) 0%, hsl(var(--brand-2)) 100%);
     --shadow-glow: 0 12px 30px -6px hsl(var(--brand-1) / 0.4);
     --shadow-glow-strong: 0 18px 40px -8px hsl(var(--brand-2) / 0.5);
+    
+    --access-blue: 214 100% 70%;
+    --access-red: 0 85% 60%;
+    --access-green: 122 50% 55%;
+    --access-bg: 45 20% 15%;
   }
 }
 

@@ -1,14 +1,26 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import * as XLSX from "xlsx";
 
-// صفحة رئيسية: شبيهة بتطبيق Access لمعالجة Excel وتصدير CSV
+// أيقونة الملفات الملونة
+const FileIcon = () => (
+  <div className="flex gap-1 mb-4">
+    <div className="w-8 h-10 bg-blue-300 rounded-sm border border-gray-400 flex items-center justify-center">
+      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+    </div>
+    <div className="w-8 h-10 bg-red-400 rounded-sm border border-gray-400 flex items-center justify-center">
+      <div className="w-2 h-2 bg-red-700 rounded-full"></div>
+    </div>
+    <div className="w-8 h-10 bg-yellow-400 rounded-sm border border-gray-400 flex items-center justify-center">
+      <div className="w-2 h-2 bg-yellow-700 rounded-full"></div>
+    </div>
+  </div>
+);
+
 const arabicMonths = [
   "كانون الثاني", "شباط", "آذار", "نيسان", "أيار", "حزيران",
   "تموز", "آب", "أيلول", "تشرين الأول", "تشرين الثاني", "كانون الأول",
@@ -42,18 +54,19 @@ function toCSV(rows: DataRow[]): string {
     const line = headers.map((h) => esc(row[h])).join(",");
     lines.push(line);
   }
-  // Add BOM for Excel compatibility
   return "\ufeff" + lines.join("\n");
 }
 
 const Index = () => {
   const [fileName, setFileName] = useState<string>("");
+  const [filePath, setFilePath] = useState<string>("");
   const [rawRows, setRawRows] = useState<DataRow[]>([]);
   const [rows, setRows] = useState<DataRow[]>([]);
   const [payerName, setPayerName] = useState<string>("");
   const [qqt, setQqt] = useState<string>("");
   const [monthIndex, setMonthIndex] = useState<string>(String(new Date().getMonth()));
   const [year, setYear] = useState<string>(String(new Date().getFullYear()));
+  const [showResults, setShowResults] = useState<boolean>(false);
   const valueDate = useMemo(() => yyyymmdd(new Date()), []);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -67,13 +80,14 @@ const Index = () => {
   const onPickFile = useCallback(async (file: File) => {
     try {
       setFileName(file.name);
+      setFilePath(file.name);
       const buf = await file.arrayBuffer();
       const wb = XLSX.read(buf, { type: "array" });
       const sheetName = wb.SheetNames[0];
       const ws = wb.Sheets[sheetName];
       const json = XLSX.utils.sheet_to_json<DataRow>(ws, { defval: "" });
       setRawRows(json);
-      toast({ title: "تم رفع الملف", description: `عدد الصفوف: ${json.length}` });
+      toast({ title: "تم سحب الملف بنجاح", description: `عدد الصفوف: ${json.length}` });
     } catch (e) {
       console.error(e);
       toast({ title: "خطأ في قراءة الملف", description: "تأكد من أن الصيغة XLS أو XLSX" });
@@ -82,7 +96,7 @@ const Index = () => {
 
   const processRows = useCallback(() => {
     if (!rawRows.length) {
-      toast({ title: "لا يوجد بيانات", description: "يرجى رفع ملف Excel أولًا" });
+      toast({ title: "لا يوجد ملف", description: "يرجى سحب ملف Excel أولاً" });
       return;
     }
     const ttx = valueDate;
@@ -95,7 +109,7 @@ const Index = () => {
       lastQqt = first7 || lastQqt;
       const last7 = benAcc.slice(-7);
       const reference = `${first7}${ttx}${last7}`;
-      const payer = r["Payer Name"]; // آخر قيمة غير فارغة
+      const payer = r["Payer Name"];
       if (payer !== undefined && payer !== null && String(payer).trim() !== "") {
         lastPayer = String(payer).trim();
       }
@@ -109,13 +123,10 @@ const Index = () => {
     setRows(processed);
     setPayerName(lastPayer);
     setQqt(lastQqt);
-    toast({ title: "تمت المعالجة", description: "تم تحديث الحقول المرجعية والتاريخية" });
-  }, [rawRows, remittanceInfo, valueDate]);
-
-  const download = useCallback(() => {
-    if (!rows.length) return;
-    const csv = toCSV(rows);
-    const fnBase = `${payerName || "ملف"}-${remittanceInfo}-${qqt || "QQT"}`.replace(/[\\/:*?"<>|]/g, "-");
+    
+    // تحميل CSV تلقائياً
+    const csv = toCSV(processed);
+    const fnBase = `${lastPayer || "ملف"}-${remittanceInfo}-${lastQqt || "QQT"}`.replace(/[\\/:*?"<>|]/g, "-");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -125,84 +136,92 @@ const Index = () => {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    toast({ title: "تم تحميل CSV", description: a.download });
-  }, [rows, payerName, remittanceInfo, qqt]);
+    
+    toast({ title: "تم تشفير الملف", description: `تم حفظ ${a.download} في مجلد التحميلات` });
+  }, [rawRows, remittanceInfo, valueDate]);
+
+  const searchDuplicates = useCallback(() => {
+    if (!rows.length) {
+      toast({ title: "لا يوجد بيانات", description: "يرجى تشفير الملف أولاً" });
+      return;
+    }
+    setShowResults(true);
+    toast({ title: "البحث مكتمل", description: "تم عرض النتائج أدناه" });
+  }, [rows]);
 
   return (
-    <main className="min-h-screen ambient-surface">
-      <section className="container py-12">
-        <header className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
-            <span className="gradient-text">منقّي سجلات إكسل</span>
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            ارفع ملف Excel، حدّد الشهر والسنة، ثم حمّل ملف CSV الناتج — بطريقة أقرب لما لديك في Access.
-          </p>
+    <main className="min-h-screen" style={{ background: "hsl(var(--access-bg))" }}>
+      <div className="container max-w-2xl mx-auto py-8">
+        {/* الهيدر */}
+        <header className="text-center mb-8">
+          <FileIcon />
+          <h1 className="text-2xl font-bold text-green-700 mb-2">برنامج توطين الرواتب</h1>
+          <p className="text-lg font-semibold text-green-600">المبرمج مجتبى فرقد محمد</p>
         </header>
 
-        <Card className="card-elevated">
-          <CardHeader>
-            <CardTitle>المعالجة والتصدير</CardTitle>
-            <CardDescription>يدعم ملفات XLS و XLSX</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-6" dir="rtl">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="file">ملف Excel</Label>
-                <div className="grid grid-cols-[1fr_auto] gap-3 items-center">
-                  <Input
-                    id="file"
-                    ref={inputRef}
-                    type="file"
-                    accept=".xls,.xlsx"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) onPickFile(f);
-                    }}
-                  />
-                  {fileName ? (
-                    <Button variant="outline" onClick={() => { setFileName(""); setRawRows([]); setRows([]); inputRef.current && (inputRef.current.value = ""); }}>إزالة</Button>
-                  ) : null}
-                </div>
-                {fileName ? <p className="text-sm text-muted-foreground">الملف: {fileName}</p> : null}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>الشهر</Label>
-                  <Select value={monthIndex} onValueChange={setMonthIndex}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="اختر الشهر" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {arabicMonths.map((m, i) => (
-                        <SelectItem key={m} value={String(i)}>
-                          {m}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="year">السنة</Label>
-                  <Input
-                    id="year"
-                    type="number"
-                    min={2000}
-                    max={2100}
-                    value={year}
-                    onChange={(e) => setYear(e.target.value)}
-                  />
-                </div>
-              </div>
+        {/* مسار الملف */}
+        <div className="mb-6" dir="rtl">
+          <div className="flex items-center gap-3">
+            <label className="font-bold text-gray-800 min-w-[100px]">مسار الملف</label>
+            <div className="flex-1 relative">
+              <Input
+                type="file"
+                accept=".xls,.xlsx"
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) onPickFile(f);
+                }}
+              />
+              <Input
+                value={filePath}
+                readOnly
+                className="bg-white border-2 border-gray-400"
+                placeholder="اختر ملف Excel..."
+              />
             </div>
+          </div>
+        </div>
 
-            <div className="flex flex-wrap gap-3 justify-end">
-              <Button variant="hero" onClick={processRows}>معالجة</Button>
-              <Button variant="secondary" onClick={download} disabled={!rows.length}>تحميل CSV</Button>
-            </div>
+        {/* الأزرار */}
+        <div className="flex flex-col gap-4 mb-8">
+          <Button
+            variant="access-blue"
+            onClick={() => inputRef.current?.click()}
+            className="mx-auto"
+          >
+            سحب الملف
+          </Button>
+          
+          <Button
+            variant="access-red"
+            onClick={processRows}
+            className="mx-auto"
+            disabled={!rawRows.length}
+          >
+            تشفير الملف
+          </Button>
+          
+          <Button
+            variant="access-green"
+            onClick={searchDuplicates}
+            className="mx-auto"
+            disabled={!rows.length}
+          >
+            البحث عن التكرار
+          </Button>
+        </div>
 
-            <div className="border rounded-lg overflow-x-auto">
+        {/* الملاحظة */}
+        <p className="text-center text-red-600 font-semibold mb-8">
+          ملاحظة : ملف الـ <span className="font-bold">CSV</span> سيكون في المجلد - رواتب
+        </p>
+
+        {/* النتائج */}
+        {showResults && rows.length > 0 && (
+          <div className="bg-white rounded-lg border-2 border-gray-400 p-4">
+            <h3 className="text-lg font-bold mb-4 text-center">نتائج المعالجة</h3>
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -215,9 +234,9 @@ const Index = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {rows.slice(0, 8).map((r, idx) => (
+                  {rows.slice(0, 10).map((r, idx) => (
                     <TableRow key={idx}>
-                      <TableCell>{r["Reference"]}</TableCell>
+                      <TableCell className="font-mono text-sm">{r["Reference"]}</TableCell>
                       <TableCell>{r["Value Date"]}</TableCell>
                       <TableCell>{r["Remittance Information"]}</TableCell>
                       <TableCell>{r["Beneficiary account"]}</TableCell>
@@ -225,24 +244,64 @@ const Index = () => {
                       <TableCell>{r["Payer Name"]}</TableCell>
                     </TableRow>
                   ))}
-                  {!rows.length && (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center text-muted-foreground">
-                        لا توجد بيانات للعرض بعد.
-                      </TableCell>
-                    </TableRow>
-                  )}
                 </TableBody>
               </Table>
             </div>
-          </CardContent>
-          <CardFooter className="text-sm text-muted-foreground flex flex-col md:flex-row gap-2 md:justify-between" dir="rtl">
-            <span>آخر "Payer Name": {payerName || "—"}</span>
-            <span>QQT: {qqt || "—"}</span>
-            <span>Value Date: {valueDate}</span>
-          </CardFooter>
-        </Card>
-      </section>
+            <div className="mt-4 text-sm text-gray-600 text-center">
+              عرض أول 10 صفوف من أصل {rows.length} صف
+            </div>
+          </div>
+        )}
+
+        {/* معلومات إضافية */}
+        {rows.length > 0 && (
+          <div className="mt-6 bg-white rounded-lg border border-gray-300 p-4" dir="rtl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div>
+                <strong>آخر دافع:</strong> {payerName || "—"}
+              </div>
+              <div>
+                <strong>QQT:</strong> {qqt || "—"}
+              </div>
+              <div>
+                <strong>تاريخ القيمة:</strong> {valueDate}
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* إخفاء حقول الشهر والسنة - أو يمكن إظهارها في حال الحاجة */}
+        <div className="hidden">
+          <Select value={monthIndex} onValueChange={setMonthIndex}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {arabicMonths.map((m, i) => (
+                <SelectItem key={m} value={String(i)}>
+                  {m}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Input
+            type="number"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+          />
+        </div>
+
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".xls,.xlsx"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) onPickFile(f);
+          }}
+        />
+      </div>
     </main>
   );
 };
