@@ -142,8 +142,6 @@ const Index = () => {
   }, [rawRows, remittanceInfo, valueDate]);
 
   const searchDuplicates = useCallback(() => {
-    console.log("البحث عن التكرارات بدأ - عدد الصفوف:", rows.length);
-    
     if (!rows.length) {
       toast({ title: "لا يوجد بيانات", description: "يرجى تشفير الملف أولاً" });
       return;
@@ -152,14 +150,12 @@ const Index = () => {
     // البحث عن التكرارات في حقلي Beneficiary Account و Beneficiary Name
     const duplicateMap = new Map<string, DataRow[]>();
     
-    rows.forEach((row, index) => {
+    rows.forEach((row) => {
       const benAccount = String(row["Beneficiary account"] || "").trim();
       const benName = String(row["Beneficiary Name"] || "").trim();
       
-      console.log(`الصف ${index}:`, { benAccount, benName });
-      
-      // إنشاء مفتاح مركب من الحقلين
-      const key = `${benAccount}###${benName}`;
+      // إنشاء مفتاح مركب من الحقلين للبحث عن التكرارات
+      const key = `${benAccount}|${benName}`;
       
       if (!duplicateMap.has(key)) {
         duplicateMap.set(key, []);
@@ -167,19 +163,13 @@ const Index = () => {
       duplicateMap.get(key)!.push(row);
     });
     
-    console.log("خريطة التكرارات:", duplicateMap);
-    
     // الحصول على الصفوف المكررة فقط (التي لها أكثر من صف واحد)
     const duplicates: DataRow[] = [];
-    duplicateMap.forEach((rowsGroup, key) => {
-      console.log(`المفتاح: ${key}, عدد الصفوف: ${rowsGroup.length}`);
+    duplicateMap.forEach((rowsGroup) => {
       if (rowsGroup.length > 1) {
         duplicates.push(...rowsGroup);
-        console.log("تم العثور على تكرار:", key);
       }
     });
-    
-    console.log("إجمالي الصفوف المكررة:", duplicates.length);
     
     setDuplicateRows(duplicates);
     setShowResults(true);
