@@ -188,7 +188,7 @@ const Index = () => {
   }, [rows]);
   return <main style={{
     background: "hsl(var(--access-bg))"
-  }} className="min-h-screen bg-lime-50">
+  }} className="min-h-screen bg-green-50">
       <div className="container max-w-2xl mx-auto py-8 bg-green-50">
         {/* الهيدر */}
         <header className="text-center mb-8">
