@@ -6,6 +6,9 @@
 All colors MUST be HSL.
 */
 
+/* Typography: Arabic-friendly font */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -101,5 +104,70 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Tajawal', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   }
+}
+
+/* --- Extend design tokens (gradients, shadows, motion) --- */
+@layer base {
+  :root {
+    /* Brand duo for gradients */
+    --brand-1: 265 88% 62%;
+    --brand-2: 295 82% 56%;
+    --gradient-primary: linear-gradient(135deg, hsl(var(--brand-1)) 0%, hsl(var(--brand-2)) 100%);
+    --shadow-glow: 0 12px 30px -6px hsl(var(--brand-1) / 0.45);
+    --shadow-glow-strong: 0 18px 40px -8px hsl(var(--brand-2) / 0.55);
+
+    --surface-elevated: 0 10% 100%;
+  }
+  .dark {
+    --brand-1: 265 88% 62%;
+    --brand-2: 295 82% 56%;
+    --gradient-primary: linear-gradient(135deg, hsl(var(--brand-1)) 0%, hsl(var(--brand-2)) 100%);
+    --shadow-glow: 0 12px 30px -6px hsl(var(--brand-1) / 0.4);
+    --shadow-glow-strong: 0 18px 40px -8px hsl(var(--brand-2) / 0.5);
+  }
+}
+
+@layer components {
+  /* Signature ambient background */
+  .ambient-surface {
+    position: relative;
+    background: radial-gradient(1200px 600px at 80% -10%, hsl(var(--brand-2) / 0.15), transparent 60%),
+                radial-gradient(1000px 500px at 10% -10%, hsl(var(--brand-1) / 0.15), transparent 60%),
+                hsl(var(--background));
+    overflow: hidden;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ambient-surface::after {
+      content: "";
+      position: absolute;
+      inset: -20% 0 auto;
+      height: 140px;
+      background: linear-gradient(90deg, hsl(var(--brand-1) / 0.15), hsl(var(--brand-2) / 0.15), transparent);
+      filter: blur(30px);
+      animation: ambient-sweep 8s linear infinite;
+      pointer-events: none;
+    }
+  }
+
+  .card-elevated {
+    box-shadow: var(--shadow-glow);
+    border: 1px solid hsl(var(--border));
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@keyframes ambient-sweep {
+  0% { transform: translateX(-30%); opacity: 0.6; }
+  50% { opacity: 0.9; }
+  100% { transform: translateX(130%); opacity: 0.6; }
 }
