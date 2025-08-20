@@ -147,12 +147,15 @@ const Index = () => {
       return;
     }
     
-    // البحث عن التكرارات في حقل Beneficiary Account فقط
+    // البحث عن التكرارات في حقلي Beneficiary Account و Beneficiary Name
     const duplicateMap = new Map<string, DataRow[]>();
     
     rows.forEach((row) => {
       const benAccount = String(row["Beneficiary account"] || "").trim();
-      const key = benAccount;
+      const benName = String(row["Beneficiary Name"] || "").trim();
+      
+      // إنشاء مفتاح مركب من الحقلين
+      const key = `${benAccount}###${benName}`;
       
       if (!duplicateMap.has(key)) {
         duplicateMap.set(key, []);
@@ -179,7 +182,7 @@ const Index = () => {
     } else {
       toast({ 
         title: "لا توجد تكرارات", 
-        description: "لم يتم العثور على أي تكرارات في الحقول المحددة" 
+        description: "لم يتم العثور على أي تكرارات في حقلي Beneficiary Account و Beneficiary Name" 
       });
     }
   }, [rows]);
