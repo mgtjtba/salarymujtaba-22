@@ -26,7 +26,7 @@ function yyyymmdd(d = new Date()) {
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}${m}${day}`;
 }
-function toCSV(rows: DataRow[]): string {
+function toCSV(rows: DataRow[], delimiter: string = "|"): string {
   if (!rows.length) return "";
   const headers = Array.from(rows.reduce<Set<string>>((set, r) => {
     Object.keys(r).forEach(k => set.add(k));
@@ -35,12 +35,13 @@ function toCSV(rows: DataRow[]): string {
   const esc = (v: any) => {
     if (v === null || v === undefined) return "";
     const s = String(v);
-    if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    const needsQuote = s.includes('"') || s.includes("\n") || s.includes(delimiter);
+    if (needsQuote) return '"' + s.replace(/"/g, '""') + '"';
     return s;
   };
-  const lines = [headers.join(",")];
+  const lines = [headers.join(delimiter)];
   for (const row of rows) {
-    const line = headers.map(h => esc(row[h])).join(",");
+    const line = headers.map(h => esc(row[h])).join(delimiter);
     lines.push(line);
   }
   return "\ufeff" + lines.join("\n");
