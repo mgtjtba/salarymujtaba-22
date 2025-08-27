@@ -152,6 +152,39 @@ const Index = () => {
       return;
     }
 
+    // التحقق من وجود IQD و SLEV في جميع الصفوف
+    const missingIQD: number[] = [];
+    const missingSLEV: number[] = [];
+    
+    rows.forEach((row, index) => {
+      const rowString = JSON.stringify(row).toLowerCase();
+      if (!rowString.includes('iqd')) {
+        missingIQD.push(index + 1);
+      }
+      if (!rowString.includes('slev')) {
+        missingSLEV.push(index + 1);
+      }
+    });
+
+    // إظهار رسائل الخطأ إذا كانت IQD أو SLEV مفقودة
+    if (missingIQD.length > 0) {
+      toast({
+        title: "خطأ: IQD مفقود",
+        description: `IQD غير موجود في الصفوف: ${missingIQD.slice(0, 10).join(', ')}${missingIQD.length > 10 ? '...' : ''}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (missingSLEV.length > 0) {
+      toast({
+        title: "خطأ: SLEV مفقود", 
+        description: `SLEV غير موجود في الصفوف: ${missingSLEV.slice(0, 10).join(', ')}${missingSLEV.length > 10 ? '...' : ''}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     // البحث عن التكرارات في حقلي Beneficiary Account و Beneficiary Name فقط
     const duplicateMap = new Map<string, DataRow[]>();
     rows.forEach(row => {
@@ -188,8 +221,8 @@ const Index = () => {
       });
     } else {
       toast({
-        title: "لا توجد تكرارات",
-        description: "لم يتم العثور على أي تكرارات في حقلي Beneficiary Account و Beneficiary Name"
+        title: "✓ الفحص مكتمل",
+        description: "لا توجد تكرارات - IQD و SLEV موجودان في جميع الصفوف"
       });
     }
   }, [rows]);
