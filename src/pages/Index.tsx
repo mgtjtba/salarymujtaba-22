@@ -151,14 +151,19 @@ const Index = () => {
       return;
     }
 
-    // البحث عن التكرارات في حقلي Beneficiary Account و Beneficiary Name
+    // البحث عن التكرارات في حقلي Beneficiary Account و Beneficiary Name فقط
     const duplicateMap = new Map<string, DataRow[]>();
     rows.forEach(row => {
-      const benAccount = String(row["Beneficiary account"] || "").trim();
+      // استخدام نفس اسم الحقل في كل مكان
+      const benAccount = String(row["Beneficiary account"] || row["Beneficiary Account"] || "").trim();
       const benName = String(row["Beneficiary Name"] || "").trim();
+
+      // تجاهل الصفوف الفارغة في كلا الحقلين
+      if (!benAccount && !benName) return;
 
       // إنشاء مفتاح مركب من الحقلين للبحث عن التكرارات
       const key = `${benAccount}|${benName}`;
+      
       if (!duplicateMap.has(key)) {
         duplicateMap.set(key, []);
       }
@@ -172,6 +177,7 @@ const Index = () => {
         duplicates.push(...rowsGroup);
       }
     });
+    
     setDuplicateRows(duplicates);
     setShowResults(true);
     if (duplicates.length > 0) {
@@ -239,16 +245,12 @@ const Index = () => {
                       <TableRow>
                         <TableHead className="text-center">Beneficiary Account</TableHead>
                         <TableHead className="text-center">Beneficiary Name</TableHead>
-                        <TableHead className="text-center">Reference</TableHead>
-                        <TableHead className="text-center">Payer Name</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {duplicateRows.map((r, idx) => <TableRow key={idx} className="bg-red-50">
-                          <TableCell className="font-mono text-sm text-center">{r["Beneficiary account"]}</TableCell>
+                          <TableCell className="font-mono text-sm text-center">{r["Beneficiary account"] || r["Beneficiary Account"]}</TableCell>
                           <TableCell className="text-center">{r["Beneficiary Name"]}</TableCell>
-                          <TableCell className="font-mono text-sm text-center">{r["Reference"]}</TableCell>
-                          <TableCell className="text-center">{r["Payer Name"]}</TableCell>
                         </TableRow>)}
                     </TableBody>
                   </Table>
