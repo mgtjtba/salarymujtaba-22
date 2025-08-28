@@ -185,18 +185,17 @@ const Index = () => {
       return;
     }
 
-    // البحث عن التكرارات في حقلي Beneficiary Account و Beneficiary Name فقط
+    // البحث عن التكرارات في حقل Beneficiary Account فقط
     const duplicateMap = new Map<string, DataRow[]>();
     rows.forEach(row => {
       // استخدام نفس اسم الحقل في كل مكان
       const benAccount = String(row["Beneficiary account"] || row["Beneficiary Account"] || "").trim();
-      const benName = String(row["Beneficiary Name"] || "").trim();
 
-      // تجاهل الصفوف الفارغة في كلا الحقلين
-      if (!benAccount && !benName) return;
+      // تجاهل الصفوف الفارغة في حقل Beneficiary Account
+      if (!benAccount) return;
 
-      // إنشاء مفتاح مركب من الحقلين للبحث عن التكرارات
-      const key = `${benAccount}|${benName}`;
+      // استخدام حقل Beneficiary Account فقط للبحث عن التكرارات
+      const key = benAccount;
       
       if (!duplicateMap.has(key)) {
         duplicateMap.set(key, []);
