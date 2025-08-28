@@ -185,29 +185,57 @@ const Index = () => {
       return;
     }
 
-    // البحث عن التكرارات في حقل Beneficiary Account فقط
-    const duplicateMap = new Map<string, DataRow[]>();
+    // البحث عن التكرارات في حقل Beneficiary Account
+    const accountDuplicateMap = new Map<string, DataRow[]>();
     rows.forEach(row => {
-      // استخدام نفس اسم الحقل في كل مكان
       const benAccount = String(row["Beneficiary account"] || row["Beneficiary Account"] || "").trim();
-
-      // تجاهل الصفوف الفارغة في حقل Beneficiary Account
       if (!benAccount) return;
-
-      // استخدام حقل Beneficiary Account فقط للبحث عن التكرارات
-      const key = benAccount;
       
-      if (!duplicateMap.has(key)) {
-        duplicateMap.set(key, []);
+      if (!accountDuplicateMap.has(benAccount)) {
+        accountDuplicateMap.set(benAccount, []);
       }
-      duplicateMap.get(key)!.push(row);
+      accountDuplicateMap.get(benAccount)!.push(row);
     });
 
-    // الحصول على الصفوف المكررة فقط (التي لها أكثر من صف واحد)
+    // البحث عن التكرارات في حقل Beneficiary Name
+    const nameDuplicateMap = new Map<string, DataRow[]>();
+    rows.forEach(row => {
+      const benName = String(row["Beneficiary Name"] || "").trim();
+      if (!benName) return;
+      
+      if (!nameDuplicateMap.has(benName)) {
+        nameDuplicateMap.set(benName, []);
+      }
+      nameDuplicateMap.get(benName)!.push(row);
+    });
+
+    // جمع جميع الصفوف المكررة من كلا الحقلين
     const duplicates: DataRow[] = [];
-    duplicateMap.forEach(rowsGroup => {
+    const seenRows = new Set<string>();
+    
+    // إضافة التكرارات من Beneficiary Account
+    accountDuplicateMap.forEach(rowsGroup => {
       if (rowsGroup.length > 1) {
-        duplicates.push(...rowsGroup);
+        rowsGroup.forEach(row => {
+          const rowKey = JSON.stringify(row);
+          if (!seenRows.has(rowKey)) {
+            seenRows.add(rowKey);
+            duplicates.push(row);
+          }
+        });
+      }
+    });
+    
+    // إضافة التكرارات من Beneficiary Name
+    nameDuplicateMap.forEach(rowsGroup => {
+      if (rowsGroup.length > 1) {
+        rowsGroup.forEach(row => {
+          const rowKey = JSON.stringify(row);
+          if (!seenRows.has(rowKey)) {
+            seenRows.add(rowKey);
+            duplicates.push(row);
+          }
+        });
       }
     });
     
