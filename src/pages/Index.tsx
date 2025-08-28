@@ -262,7 +262,7 @@ const Index = () => {
         {/* مسار الملف */}
         <div className="mb-6" dir="rtl">
           <div className="flex items-center gap-3">
-            <label className="font-bold text-gray-800 min-w-[100px] bg-green-50 rounded">مسار الملف</label>
+            <label className="font-bold text-gray-800 min-w-[100px] rounded bg-transparent">مسار الملف</label>
             <div className="flex-1 relative">
               <Input type="file" accept=".xls,.xlsx" onChange={e => {
               const f = e.target.files?.[0];
