@@ -275,15 +275,15 @@ const Index = () => {
 
         {/* الأزرار */}
         <div className="flex flex-col gap-4 mb-8">
-          <Button variant="access-blue" onClick={() => inputRef.current?.click()} className="mx-auto text-2xl font-bold">
+          <Button variant="access-blue" onClick={() => inputRef.current?.click()} className="mx-auto">
             سحب الملف
           </Button>
           
-          <Button variant="access-red" onClick={processRows} disabled={!rawRows.length} className="mx-auto text-2xl font-bold">
+          <Button variant="access-red" onClick={processRows} className="mx-auto" disabled={!rawRows.length}>
             تشفير الملف
           </Button>
           
-          <Button variant="access-green" onClick={searchDuplicates} disabled={!rows.length} className="mx-auto text-2xl font-bold">
+          <Button variant="access-green" onClick={searchDuplicates} className="mx-auto" disabled={!rows.length}>
             البحث عن التكرار
           </Button>
         </div>
