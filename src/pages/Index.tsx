@@ -251,7 +251,7 @@ const Index = () => {
   return <main style={{
     background: "hsl(var(--access-bg))"
   }} className="min-h-screen bg-green-100">
-      <div className="container max-w-2xl mx-auto py-8 bg-green-100">
+      <div className="container max-w-2xl mx-auto py-8 bg-transparent">
         {/* الهيدر */}
         <header className="text-center mb-8">
           <FileIcon />
