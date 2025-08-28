@@ -155,7 +155,6 @@ const Index = () => {
     // التحقق من وجود IQD و SLEV في جميع الصفوف
     const missingIQD: number[] = [];
     const missingSLEV: number[] = [];
-    
     rows.forEach((row, index) => {
       const rowString = JSON.stringify(row).toLowerCase();
       if (!rowString.includes('iqd')) {
@@ -175,10 +174,9 @@ const Index = () => {
       });
       return;
     }
-
     if (missingSLEV.length > 0) {
       toast({
-        title: "خطأ: SLEV مفقود", 
+        title: "خطأ: SLEV مفقود",
         description: `SLEV غير موجود في الصفوف: ${missingSLEV.slice(0, 10).join(', ')}${missingSLEV.length > 10 ? '...' : ''}`,
         variant: "destructive"
       });
@@ -190,7 +188,6 @@ const Index = () => {
     rows.forEach(row => {
       const benAccount = String(row["Beneficiary account"] || row["Beneficiary Account"] || "").trim();
       if (!benAccount) return;
-      
       if (!accountDuplicateMap.has(benAccount)) {
         accountDuplicateMap.set(benAccount, []);
       }
@@ -202,7 +199,6 @@ const Index = () => {
     rows.forEach(row => {
       const benName = String(row["Beneficiary Name"] || "").trim();
       if (!benName) return;
-      
       if (!nameDuplicateMap.has(benName)) {
         nameDuplicateMap.set(benName, []);
       }
@@ -212,7 +208,7 @@ const Index = () => {
     // جمع جميع الصفوف المكررة من كلا الحقلين
     const duplicates: DataRow[] = [];
     const seenRows = new Set<string>();
-    
+
     // إضافة التكرارات من Beneficiary Account
     accountDuplicateMap.forEach(rowsGroup => {
       if (rowsGroup.length > 1) {
@@ -225,7 +221,7 @@ const Index = () => {
         });
       }
     });
-    
+
     // إضافة التكرارات من Beneficiary Name
     nameDuplicateMap.forEach(rowsGroup => {
       if (rowsGroup.length > 1) {
@@ -238,7 +234,6 @@ const Index = () => {
         });
       }
     });
-    
     setDuplicateRows(duplicates);
     setShowResults(true);
     if (duplicates.length > 0) {
