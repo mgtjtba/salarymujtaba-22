@@ -288,48 +288,8 @@ const Index = () => {
           </Button>
         </div>
 
-        {/* تعليمات التثبيت */}
-        <div className="bg-blue-50 rounded-lg border-2 border-blue-300 p-6 mb-8" dir="rtl">
-          <h3 className="text-xl font-bold text-blue-800 mb-4 text-center">📱 كيفية تثبيت البرنامج للعمل بدون إنترنت</h3>
-          
-          <div className="space-y-4">
-            <div className="bg-white rounded-lg p-4 border border-blue-200">
-              <h4 className="font-bold text-blue-700 mb-2">🖥️ على الكمبيوتر (Chrome, Edge):</h4>
-              <ol className="list-decimal list-inside space-y-1 text-sm">
-                <li>اضغط على أيقونة التثبيت <span className="bg-gray-200 px-2 py-1 rounded">⊞</span> في شريط العناوين</li>
-                <li>أو اذهب إلى القائمة ← "تثبيت برنامج توطين الرواتب"</li>
-                <li>اضغط "تثبيت" في النافذة المنبثقة</li>
-                <li>سيظهر البرنامج في سطح المكتب وقائمة البرامج</li>
-              </ol>
-            </div>
-
-            <div className="bg-white rounded-lg p-4 border border-blue-200">
-              <h4 className="font-bold text-blue-700 mb-2">📱 على الجوال (Android):</h4>
-              <ol className="list-decimal list-inside space-y-1 text-sm">
-                <li>افتح الموقع في Chrome</li>
-                <li>اضغط على القائمة الثلاث نقاط ⋮</li>
-                <li>اختر "إضافة إلى الشاشة الرئيسية"</li>
-                <li>اضغط "إضافة" ← "إضافة تلقائياً"</li>
-              </ol>
-            </div>
-
-            <div className="bg-white rounded-lg p-4 border border-blue-200">
-              <h4 className="font-bold text-blue-700 mb-2">🍎 على iPhone/iPad:</h4>
-              <ol className="list-decimal list-inside space-y-1 text-sm">
-                <li>افتح الموقع في Safari</li>
-                <li>اضغط زر المشاركة <span className="bg-gray-200 px-2 py-1 rounded">↗</span></li>
-                <li>اختر "إضافة إلى الشاشة الرئيسية"</li>
-                <li>اضغط "إضافة"</li>
-              </ol>
-            </div>
-
-            <div className="bg-green-50 rounded-lg p-3 border border-green-300 mt-4">
-              <p className="text-green-800 font-semibold text-center">
-                ✅ بعد التثبيت: سيعمل البرنامج بدون إنترنت ويفتح مباشرة من الشاشة الرئيسية
-              </p>
-            </div>
-          </div>
-        </div>
+        {/* الملاحظة */}
+        
 
         {/* النتائج */}
         {showResults && <div className="bg-white rounded-lg border-2 border-gray-400 p-4">
