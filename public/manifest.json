@@ -1,48 +1,33 @@
 {
-  "name": "برنامج توطين الرواتب - مجتبى فرقد محمد",
+  "name": "منقّي سجلات إكسل - برنامج توطين الرواتب",
   "short_name": "توطين الرواتب",
-  "description": "أداة عربية متخصصة لمعالجة ملفات Excel وتشفيرها وإنشاء مرجع وتاريخ قيمة وتصدير CSV للاستخدام بدون انترنت",
+  "description": "أداة عربية لمعالجة ملفات Excel وإنشاء مرجع وقيم تاريخ وتصدير CSV بسرعة",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f0fdf4",
   "theme_color": "#22c55e",
-  "orientation": "any",
+  "orientation": "portrait",
   "lang": "ar",
   "dir": "rtl",
-  "scope": "/",
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ],
-  "categories": ["productivity", "business", "utilities", "finance"],
-  "related_applications": [],
-  "prefer_related_applications": false,
-  "shortcuts": [
-    {
-      "name": "تشفير ملف جديد",
-      "short_name": "تشفير",
-      "description": "بدء عملية تشفير ملف Excel جديد",
-      "url": "/",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
-    }
-  ],
+  "categories": ["productivity", "business", "utilities"],
   "screenshots": [
     {
       "src": "/screenshot-wide.png",
       "sizes": "1280x720",
       "type": "image/png",
-      "form_factor": "wide",
-      "label": "واجهة برنامج توطين الرواتب"
+      "form_factor": "wide"
     }
   ]
 }
