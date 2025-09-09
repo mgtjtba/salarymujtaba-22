@@ -139,7 +139,7 @@ const Index = () => {
     a.remove();
     URL.revokeObjectURL(url);
     toast({
-      title: "تم تحويل الملف",
+      title: "تم تشفير الملف",
       description: `تم حفظ ${a.download} في مجلد التحميلات`
     });
   }, [rawRows, remittanceInfo, valueDate]);
@@ -147,7 +147,7 @@ const Index = () => {
     if (!rows.length) {
       toast({
         title: "لا يوجد بيانات",
-        description: "يرجى تحويل الملف أولاً"
+        description: "يرجى تشفير الملف أولاً"
       });
       return;
     }
@@ -250,7 +250,7 @@ const Index = () => {
   }, [rows]);
   return <main style={{
     background: "hsl(var(--access-bg))"
-  }} className="min-h-screen bg-emerald-50">
+  }} className="min-h-screen bg-green-50">
       <div className="container max-w-2xl mx-auto py-8 bg-transparent">
         {/* الهيدر */}
         <header className="text-center mb-8">
@@ -279,7 +279,9 @@ const Index = () => {
             سحب الملف
           </Button>
           
-          <Button variant="access-red" onClick={processRows} className="mx-auto" disabled={!rawRows.length}>تحويل الملف</Button>
+          <Button variant="access-red" onClick={processRows} className="mx-auto" disabled={!rawRows.length}>
+            تشفير الملف
+          </Button>
           
           <Button variant="access-green" onClick={searchDuplicates} className="mx-auto" disabled={!rows.length}>
             البحث عن التكرار
