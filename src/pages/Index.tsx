@@ -147,7 +147,7 @@ const Index = () => {
     if (!rows.length) {
       toast({
         title: "لا يوجد بيانات",
-        description: "يرجى تشفير الملف أولاً"
+        description: "يرجى تحويل الملف أولاً"
       });
       return;
     }
