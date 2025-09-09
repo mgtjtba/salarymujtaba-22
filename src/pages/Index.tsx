@@ -139,7 +139,7 @@ const Index = () => {
     a.remove();
     URL.revokeObjectURL(url);
     toast({
-      title: "تم تشفير الملف",
+      title: "تم تحويل الملف",
       description: `تم حفظ ${a.download} في مجلد التحميلات`
     });
   }, [rawRows, remittanceInfo, valueDate]);
