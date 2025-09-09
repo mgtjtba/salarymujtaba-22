@@ -288,8 +288,37 @@ const Index = () => {
           </Button>
         </div>
 
-        {/* الملاحظة */}
-        
+        {/* تعليمات التثبيت */}
+        <div className="mb-8 bg-white rounded-lg border-2 border-gray-400 p-6" dir="rtl">
+          <h2 className="text-xl font-bold text-center mb-4 text-green-600">📱 تثبيت البرنامج للاستخدام بدون انترنت</h2>
+          
+          <div className="grid md:grid-cols-2 gap-6 text-sm">
+            <div className="bg-blue-50 rounded-lg p-4">
+              <h3 className="font-bold text-blue-800 mb-2">💻 على الكمبيوتر (Chrome/Edge)</h3>
+              <ol className="space-y-1 text-blue-700">
+                <li>1. اضغط على أيقونة "تثبيت" في شريط العناوين</li>
+                <li>2. أو من القائمة: النقاط الثلاث ← تثبيت التطبيق</li>
+                <li>3. اضغط "تثبيت" في النافذة المنبثقة</li>
+                <li>4. سيظهر البرنامج على سطح المكتب</li>
+              </ol>
+            </div>
+            
+            <div className="bg-green-50 rounded-lg p-4">
+              <h3 className="font-bold text-green-800 mb-2">📱 على الهاتف (Android/iPhone)</h3>
+              <ol className="space-y-1 text-green-700">
+                <li>1. افتح الموقع في المتصفح</li>
+                <li>2. اضغط "مشاركة" أو القائمة</li>
+                <li>3. اختر "إضافة إلى الشاشة الرئيسية"</li>
+                <li>4. سيعمل كتطبيق مستقل بدون انترنت</li>
+              </ol>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-yellow-50 rounded-lg text-center">
+            <p className="text-yellow-800 font-semibold">✅ بعد التثبيت: يعمل البرنامج بدون انترنت تماماً!</p>
+            <p className="text-yellow-700 text-sm">جميع البيانات تتم معالجتها محلياً على جهازك</p>
+          </div>
+        </div>
 
         {/* النتائج */}
         {showResults && <div className="bg-white rounded-lg border-2 border-gray-400 p-4">
