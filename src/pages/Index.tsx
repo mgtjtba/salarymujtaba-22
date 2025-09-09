@@ -279,9 +279,7 @@ const Index = () => {
             سحب الملف
           </Button>
           
-          <Button variant="access-red" onClick={processRows} className="mx-auto" disabled={!rawRows.length}>
-            تشفير الملف
-          </Button>
+          <Button variant="access-red" onClick={processRows} className="mx-auto" disabled={!rawRows.length}>تحويل الملف</Button>
           
           <Button variant="access-green" onClick={searchDuplicates} className="mx-auto" disabled={!rows.length}>
             البحث عن التكرار
