@@ -288,8 +288,6 @@ const Index = () => {
           </Button>
         </div>
 
-        {/* تعليمات التثبيت */}
-        
 
         {/* النتائج */}
         {showResults && <div className="bg-white rounded-lg border-2 border-gray-400 p-4">
