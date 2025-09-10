@@ -275,7 +275,7 @@ const Index = () => {
         description: "لا توجد تكرارات - IQD و SLEV موجودان في جميع الصفوف"
       });
     }
-  }, [rows]);
+  }, [rawRows, remittanceInfo, valueDate, rows]);
   return <main style={{
     background: "hsl(var(--access-bg))"
   }} className="min-h-screen bg-green-50">
