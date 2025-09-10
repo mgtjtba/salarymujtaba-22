@@ -26,6 +26,8 @@ const buttonVariants = cva(
           "bg-[hsl(var(--access-red))] text-white hover:bg-[hsl(var(--access-red))]/90 shadow-lg font-bold text-lg py-4 px-8 min-w-[200px]",
         "access-green":
           "bg-[hsl(var(--access-green))] text-white hover:bg-[hsl(var(--access-green))]/90 shadow-lg font-bold text-lg py-4 px-8 min-w-[200px]",
+        "access-destructive":
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg font-bold text-lg py-4 px-8 min-w-[200px]",
       },
       size: {
         default: "h-10 px-4 py-2",

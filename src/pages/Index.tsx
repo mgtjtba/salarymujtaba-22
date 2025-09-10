@@ -316,7 +316,7 @@ const Index = () => {
           </Button>
 
           <Button 
-            variant="destructive" 
+            variant="access-destructive"
             onClick={() => {
               setFileName("");
               setFilePath("");
