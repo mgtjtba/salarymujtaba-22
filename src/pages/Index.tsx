@@ -139,17 +139,45 @@ const Index = () => {
     a.remove();
     URL.revokeObjectURL(url);
     toast({
-      title: "تم تشفير الملف",
+      title: "تم تحويل الملف",
       description: `تم حفظ ${a.download} في مجلد التحميلات`
     });
   }, [rawRows, remittanceInfo, valueDate]);
   const searchDuplicates = useCallback(() => {
-    if (!rows.length) {
+    if (!rawRows.length) {
       toast({
         title: "لا يوجد بيانات",
-        description: "يرجى تشفير الملف أولاً"
+        description: "يرجى سحب ملف أولاً"
       });
       return;
+    }
+
+    // تطبيق المعالجة إذا لم تكن مطبقة
+    if (!rows.length || rows.length !== rawRows.length) {
+      const ttx = valueDate;
+      let lastPayer = "";
+      let lastQqt = "";
+      const processed = rawRows.map(r => {
+        const benAcc = String(r["Beneficiary account"] ?? "").trim();
+        const recBic = String(r["Receiver BIC"] ?? "");
+        const first7 = recBic.slice(0, 7);
+        lastQqt = first7 || lastQqt;
+        const last7 = benAcc.slice(-7);
+        const reference = `${first7}${ttx}${last7}`;
+        const payer = r["Payer Name"];
+        if (payer !== undefined && payer !== null && String(payer).trim() !== "") {
+          lastPayer = String(payer).trim();
+        }
+        return {
+          ...r,
+          Reference: reference,
+          "Value Date": ttx,
+          "Remittance Information": remittanceInfo
+        } as DataRow;
+      });
+      setRows(processed);
+      setPayerName(lastPayer);
+      setQqt(lastQqt);
     }
 
     // التحقق من وجود IQD و SLEV في جميع الصفوف
@@ -280,11 +308,35 @@ const Index = () => {
           </Button>
           
           <Button variant="access-red" onClick={processRows} className="mx-auto" disabled={!rawRows.length}>
-            تشفير الملف
+            تحويل الملف
           </Button>
           
-          <Button variant="access-green" onClick={searchDuplicates} className="mx-auto" disabled={!rows.length}>
+          <Button variant="access-green" onClick={searchDuplicates} className="mx-auto" disabled={!rawRows.length}>
             البحث عن التكرار
+          </Button>
+
+          <Button 
+            variant="destructive" 
+            onClick={() => {
+              setFileName("");
+              setFilePath("");
+              setRawRows([]);
+              setRows([]);
+              setPayerName("");
+              setQqt("");
+              setShowResults(false);
+              setDuplicateRows([]);
+              if (inputRef.current) {
+                inputRef.current.value = "";
+              }
+              toast({
+                title: "تم مسح البيانات",
+                description: "تم إعادة تعيين جميع البيانات"
+              });
+            }} 
+            className="mx-auto"
+          >
+            مسح
           </Button>
         </div>
 
